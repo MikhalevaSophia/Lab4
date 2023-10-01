@@ -1,0 +1,123 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Linq;
+
+namespace task3
+{
+    class Car
+    {
+        public string Name { get; set; }
+        public int ProductionYear { get; set; }
+        public int MaxSpeed { get; set; }
+        public Car(string Name, int ProductionYear, int MaxSpeed)
+        {
+            this.Name = Name;
+            this.ProductionYear = ProductionYear;
+            this.MaxSpeed = MaxSpeed;
+        }
+        public void print()
+        {
+            Console.WriteLine($"Name: {Name}, Production year: {ProductionYear}, MaxSpeed: {MaxSpeed}.");
+        }
+    }
+    public enum CarCompareType { Name, ProductionYear, MaxSpeed };
+    class CarComparer : IComparer<Car>
+    {
+        public CarCompareType _CompareType;
+        public CarComparer(CarCompareType CarCompareType)
+        {
+            _CompareType = CarCompareType;
+        }
+        public int Compare(Car x, Car y)
+        {
+            if (_CompareType == CarCompareType.Name)
+            {
+                return x.Name.CompareTo(y.Name);
+            }
+            if (_CompareType == CarCompareType.ProductionYear)
+            {
+                return x.ProductionYear.CompareTo(y.ProductionYear);
+            }
+            if (_CompareType == CarCompareType.MaxSpeed)
+            {
+                return x.MaxSpeed.CompareTo(y.MaxSpeed);
+            }
+            return 0;
+        }
+    }
+    class CarCatalog
+    {
+        public List<Car> list = new List<Car>();
+        public CarCatalog(params Car[] car)
+        {
+            for(int i = 0; i < car.Length; i++)
+            {
+                list.Add(car[i]);
+            }
+        }
+        public IEnumerable<Car> Front()
+        {
+            for(int i = 0;i < list.Count; i++)
+            {
+                yield return list[i];
+            }
+        }
+        public IEnumerable<Car> Back()
+        {
+            for(int i = list.Count - 1;i >= 0 ; i--)
+            {
+                yield return list[i];
+            }
+        }
+        public IEnumerable<Car> Year()
+        {
+            list.Sort(new CarComparer(CarCompareType.ProductionYear));
+            for(int i = 0;i < list.Count; i++)
+            {
+                yield return list[i];
+            }
+        }
+        public IEnumerable<Car> Speed()
+        {
+            list.Sort(new CarComparer(CarCompareType.MaxSpeed));
+            for (int i = 0; i < list.Count; i++)
+            {
+                yield return list[i];
+            }
+        }
+    }
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Car car1 = new Car("Audi", 2020, 300);
+            Car car2 = new Car("BMW", 2017, 200);
+            Car car3 = new Car("Mersedes", 2000, 250);
+            CarCatalog catalog = new CarCatalog(car1, car2, car3);
+            Console.WriteLine("Catalog:");
+            foreach (Car car in catalog.Front())
+            {
+                car.print();
+            }
+            Console.WriteLine("Revers order");
+            foreach(Car car in catalog.Back())
+            {
+                car.print();
+            }
+            Console.WriteLine("Sorting by year production");
+            foreach (Car car in catalog.Year())
+            {
+                car.print();
+            }
+            Console.WriteLine("Sorting by max  speed");
+            foreach (Car car in catalog.Speed())
+            {
+                car.print();
+            }
+        }
+    }
+}
