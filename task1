@@ -1,0 +1,223 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace task1
+{
+    class MyMatrix
+    {
+        private int n, m;
+        private int[,] mass;
+        public int N
+        {
+            get { return n; }
+            set { if (value > 0) n = value; }
+        }
+        public int M
+        {
+            get { return m; }
+            set { if (value > 0) m = value; }
+        }
+        public MyMatrix(int n, int m)
+        {
+           this.n = n;
+           this.m = m;
+           mass = new int[this.n, this.m];
+        }
+        public int this[int i, int j]
+        {
+            get
+            {
+                return mass[i, j];
+            }
+            set
+            {
+                mass[i, j] = value;
+            }
+        }
+
+        public void WriteMatrix(int min, int max)
+        {
+
+            mass = new int[this.n, this.m];
+            Random rand = new Random();
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    mass[i, j] = rand.Next(min, max);
+                }
+            }
+        }
+
+        public void ReadMat()
+        {
+            for (int i = 0; i < n - 1; i++)
+            {
+                for (int j = 0; j < m - 1; j++)
+                {
+                    Console.Write(mass[i, j] + "\t");
+                }
+                Console.WriteLine();
+            }
+        }
+        public static MyMatrix umnch(MyMatrix a, int ch)
+        {
+            MyMatrix resMass = new MyMatrix(a.N, a.M);
+            for (int i = 0; i < a.N - 1; i++)
+            {
+                for (int j = 0; j < a.M - 1; j++)
+                {
+                    resMass[i, j] = a[i, j] * ch;
+                }
+            }
+            return resMass;
+        }
+
+        public static MyMatrix umn(MyMatrix a, MyMatrix b)
+        {
+            MyMatrix resMass = new MyMatrix(a.N, a.M);
+            if (a.N == b.M)
+            {
+                for (int i = 0; i < a.N - 1; i++)
+                    for (int j = 0; j < b.N - 1; j++)
+                        for (int k = 0; k < b.M - 1; k++)
+                            resMass[i, j] += a[i, k] * b[k, j];
+            }
+            else
+            {
+                Console.WriteLine("Error");
+            }
+
+            return resMass;
+        }
+
+        public static MyMatrix delch(MyMatrix a, int ch)
+        {
+            MyMatrix resMass = new MyMatrix(a.N, a.M);
+            for (int i = 0; i < a.N - 1; i++)
+            {
+                for (int j = 0; j < a.M - 1; j++)
+                {
+                    resMass[i, j] = a[i, j] / ch;
+                }
+            }
+            return resMass;
+        }
+
+        public static MyMatrix operator *(MyMatrix a, MyMatrix b)
+        {
+            return MyMatrix.umn(a, b);
+        }
+        public static MyMatrix operator /(MyMatrix a, int b)
+        {
+            return MyMatrix.delch(a, b);
+        }
+
+        public static MyMatrix operator *(MyMatrix a, int b)
+        {
+            return MyMatrix.umnch(a, b);
+        }
+
+        public static MyMatrix sum(MyMatrix a, MyMatrix b)
+        {
+            MyMatrix resMass = new MyMatrix(a.N, a.M);
+            if (a.M == b.M && a.N == b.N)
+            {
+                for (int i = 0; i < a.N; i++)
+                {
+                    for (int j = 0; j < b.N; j++)
+                    {
+                        resMass[i, j] = a[i, j] + b[i, j];
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Error");
+            }
+            return resMass;
+        }
+
+        public static MyMatrix minus(MyMatrix a, MyMatrix b)
+        {
+            MyMatrix resMass = new MyMatrix(a.N, a.M);
+            if (a.M == b.M && a.N == b.N)
+            {
+                for (int i = 0; i < a.N; i++)
+                {
+                    for (int j = 0; j < b.N; j++)
+                    {
+                        resMass[i, j] = a[i, j] - b[i, j];
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Error");
+            }
+            return resMass;
+        }
+
+        public static MyMatrix operator +(MyMatrix a, MyMatrix b)
+        {
+            return MyMatrix.sum(a, b);
+        }
+        public static MyMatrix operator -(MyMatrix a, MyMatrix b)
+        {
+            return MyMatrix.sum(a, b);
+        }
+
+        ~MyMatrix()
+        {
+            Console.WriteLine("Очистка");
+        }
+
+    }
+    class MainProgram
+    {
+
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Введите размерзность матрицы A");
+            int n = Convert.ToInt32(Console.ReadLine());
+            int m = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Введите размерзность матрицы Б");
+            int nn = Convert.ToInt32(Console.ReadLine());
+            int mm = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Введите диапазон");
+            int min = Convert.ToInt32(Console.ReadLine());
+            int max = Convert.ToInt32(Console.ReadLine());
+            MyMatrix m1 = new MyMatrix(n, m);
+            m1.WriteMatrix(min, max);
+            MyMatrix m2 = new MyMatrix(nn, mm);
+            m2.WriteMatrix(min, max);
+            Console.WriteLine("Матрица А: ");
+            m1.ReadMat();
+            Console.WriteLine("Матрица Б: ");
+            m2.ReadMat();
+            Console.WriteLine("Сложение матриц А и Б: ");
+            MyMatrix m3 = m1 + m2;
+            m3.ReadMat();
+            Console.WriteLine("Умножение матриц А и Б: ");
+            MyMatrix m4 = m1 * m2;
+            m4.ReadMat();
+            Console.WriteLine("Вычитание матриц А и Б: ");
+            MyMatrix m5 = m1 - m2;
+            m5.ReadMat();
+            Console.WriteLine("Умножение матриц А на число: ");
+            Console.WriteLine("Введите число: ");
+            int number = Convert.ToInt32(Console.ReadLine());
+            MyMatrix m6 = m1 * number;
+            m6.ReadMat();
+            Console.WriteLine("Деление матриц А на число: ");
+            Console.WriteLine("Введите число: ");
+            int numb = Convert.ToInt32(Console.ReadLine());
+            MyMatrix m7 = m1 / numb;
+            m7.ReadMat();
+
+        }
+    }
+}
